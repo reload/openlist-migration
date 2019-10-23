@@ -1,0 +1,8 @@
+{
+    "name": "danskernesdigitalebibliotek/openlist-migration",
+    "type": "project",
+    "require": {
+        "marquine/php-etl": "^2.3"
+    },
+    "license": "AGPL"
+}

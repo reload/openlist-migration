@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  openlist-db:
+    image: mariadb:10.3
+    volumes:
+      - ./docker/openlist:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: db
+    ports:
+      - 3306
+
+  materiallist-db:
+    image: mariadb:10.3
+    volumes:
+      - ./docker/materiallist:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: db
+    ports:
+      - 3306
+
+  followsearches-db:
+    image: mariadb:10.3
+    volumes:
+      - ./docker/followsearches:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: db
+    ports:
+      - 3306
+
+  php:
+    image: thecodingmachine/php:7.3-v2-cli
+    volumes:
+      - ./:/usr/src/app
+    environment:
+      PHP_INI_MEMORY_LIMIT: 1g
+      STARTUP_COMMAND_1: composer install
+
