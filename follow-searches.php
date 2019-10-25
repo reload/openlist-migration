@@ -67,6 +67,11 @@ SQL
     ->transform('callback', [
       'callback' => function (Row $row) {
         $data = unserialize($row->get('data'));
+        if ($data['type'] &&
+          !in_array($data['type'], ['search_query', 'follow_author'])) {
+          var_dump($row->toArray());
+          $row->discard();
+        }
 
         if (empty($data['value'])) {
           var_dump($row->toArray());
