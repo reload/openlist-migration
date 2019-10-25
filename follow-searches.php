@@ -16,6 +16,8 @@ Etl::service('db')->addConnection([
   'database' => 'db',
   'username' => 'db',
   'password' => 'db',
+  'charset' => 'utf8',
+  'collation' => 'utf8_general_ci',
 ], 'openlist');
 
 Etl::service('db')->addConnection([
@@ -28,6 +30,8 @@ Etl::service('db')->addConnection([
   'username' => 'db',
   'password' => 'db',
 ], 'materiallist');
+  'charset' => 'utf8mb4',
+  'collation' => 'utf8mb4_unicode_ci',
 
 $container = Container::getInstance();
 $container->bind('callback_transformer', CallbackTransformer::class);
