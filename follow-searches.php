@@ -32,6 +32,7 @@ Etl::service('db')->addConnection([
 ], 'materiallist');
   'charset' => 'utf8mb4',
   'collation' => 'utf8mb4_unicode_ci',
+], 'followsearches');
 
 $container = Container::getInstance();
 $container->bind('callback_transformer', CallbackTransformer::class);
@@ -47,7 +48,7 @@ SELECT l.owner, e.data, e.created
 FROM elements AS e
 JOIN lists AS l ON e.list_id = l.list_id
 WHERE
-l.type IN ("user_list", "remember")
+l.type IN ("follow_author", "user_searches")
 AND e.library_code REGEXP '[0-9]{6}'
 SQL
       , ['connection' => 'openlist'])
@@ -81,14 +82,15 @@ SQL
         $last_row = $row;
       }
     ])
-    ->load('insert', 'materials', [
+    ->load('insert', 'searches', [
       'columns' => [
         'owner' => 'guid',
         'list' => 'list',
-        'data' => 'material',
+        'title' => 'title',
+        'data' => 'query',
         'created' => 'changed_at'
       ],
-      'connection' => 'materiallist'
+      'connection' => 'followsearches'
     ])
     ->run();
 } catch (Exception $e) {
