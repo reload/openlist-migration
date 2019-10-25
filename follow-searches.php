@@ -84,7 +84,44 @@ SQL
     ->transform('unique_rows', ['columns' => ['owner', 'list', 'data']])
     ->transform('callback', [
       'callback' => function (Row $row) {
-        global $last_row;
+        $query = $row->get('data');
+        $title = $query;
+        if (preg_match('/^(.*?)\?/u', $query, $matches)) {
+          $title = $matches[1];
+        } elseif (preg_match('/^phrase\.creator=\"(.+)\"/u', $query, $matches)) {
+          $title = $matches[1];
+        }
+
+        // Truncate excessively long titles.
+        $title = mb_substr($title, 0, 254);
+        $row->set('title', $title);
+      }
+    ])
+    ->transform('callback', [
+        'callback' => function(Row $row) {
+          $query = $row->get('data');
+          if (preg_match('/^(.*?)\?(.*)$/u', $query, $matches)) {
+            parse_str($matches[2], $args);
+            if (!empty($args['facets'])) {
+              $facet_queries = array_filter(array_map(function (string $facet) {
+                if (preg_match('/^(.+?)\:(.+)/u', $facet, $matches)) {
+                  return sprintf('%s="%s"', $matches[1],$matches[2]);
+                } else {
+                  return FALSE;
+                }
+              }, $args['facets']));
+              $query = $matches[1] . ' and ' . implode(' and ', $facet_queries);
+              $row->set('data', $query);
+            }
+          }
+        }
+      ]
+    )
+    // Register the row for debugging. If an database error occurs it can be
+    // hard to tell what was going to be inserted. Here it is nice to have
+    // the actual row available.
+    ->transform('callback', [
+      'callback' => function (Row $row) use (&$last_row) {
         $last_row = $row;
       }
     ])
