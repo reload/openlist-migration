@@ -81,7 +81,7 @@ SQL
         }
       }
     ])
-    ->transform('unique_rows', ['columns' => ['owner', 'list', 'data']])
+    ->transform('unique_rows', ['columns' => ['owner', 'list', 'hash']])
     ->transform('callback', [
       'callback' => function (Row $row) {
         $query = $row->get('data');
@@ -117,6 +117,12 @@ SQL
         }
       ]
     )
+    ->transform('callback', [
+      'callback' => function (Row $row) {
+        $query = $row->get('data');
+        $row->set('hash', hash('sha512', $query));
+      }
+    ])
     // Register the row for debugging. If an database error occurs it can be
     // hard to tell what was going to be inserted. Here it is nice to have
     // the actual row available.
@@ -131,6 +137,7 @@ SQL
         'list' => 'list',
         'title' => 'title',
         'data' => 'query',
+        'hash' => 'hash',
         'created' => 'changed_at'
       ],
       'connection' => 'followsearches'
