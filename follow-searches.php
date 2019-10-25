@@ -49,6 +49,7 @@ FROM elements AS e
 JOIN lists AS l ON e.list_id = l.list_id
 WHERE
 l.type IN ("follow_author", "user_searches")
+AND e.data NOT LIKE '%ting_object%'
 AND e.library_code REGEXP '[0-9]{6}'
 SQL
       , ['connection' => 'openlist'])
