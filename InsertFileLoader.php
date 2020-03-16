@@ -86,8 +86,16 @@ class InsertFileLoader extends Insert
       if (is_null($value))
         $values[$key] = 'NULL';
     }
-    // Walk the array to see if we can add single-quotes to strings
-    array_walk($values, function(&$v, $k) { if (!is_numeric($v) && $v != "NULL") $v = "'" . $this->db->pdo($this->connection)->quote($v) . "'"; });
+    // Walk the array to escape values.
+    array_walk($values, function(&$v, $k) {
+      if (!is_numeric($v) && $v != "NULL") {
+        // Manually escape \. For some reason PDO::quote() does not seem to
+        // handle this.
+        $v = str_replace("\\", "\\\\", $v);
+
+        $v = $this->db->pdo($this->connection)->quote($v);
+      }
+    });
 
     $query = preg_replace($keys, $values, $query, 1, $count);
 
